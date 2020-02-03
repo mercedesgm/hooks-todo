@@ -6,8 +6,18 @@
 trigger:
 - master
 
+strategy:
+  matrix:
+    linux:
+      imageName: "ubuntu-16.04"
+    mac:
+      imageName: "macos-10.14"
+    windows:
+      imageName: "vs2017-win2016"
+  maxParallel: 3
+
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: $(imageName)'
 
 steps:
 - task: NodeTool@0
@@ -19,3 +29,10 @@ steps:
     npm install
     npm run build
   displayName: 'npm install and build'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: "JaCoCo"
+    summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/site/jacoco/jacoco.xml"
+    reportDirectory: "$(System.DefaultWorkingDirectory)/**/site/jacoco"
+    failIfCoverageEmpty: true
